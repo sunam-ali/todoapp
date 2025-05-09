@@ -114,12 +114,12 @@ input:focus::placeholder {
     flex-direction: column;
     justify-content: start;
     align-items: center;
-    padding: 2rem;
+    padding: 10px;
     padding-top: 3rem;
     gap: 4rem;
   }
   .task {
-    width: 85%;
+    width: 100%;
   }
   .action {
     gap: 4px;
