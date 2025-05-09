@@ -119,7 +119,7 @@ input:focus::placeholder {
     gap: 4rem;
   }
   .task {
-    width: 100%;
+    width: 90%;
   }
   .action {
     gap: 4px;
