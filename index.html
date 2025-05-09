@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="https://img.icons8.com/?size=100&id=0TUxgWMRJB3W&format=png&color=000000" type="image/png">
+  <link rel="stylesheet" href="style.css">
+  <title>Todo</title>
+</head>
+<body>
+  <div class="task-to-do task">
+    <h1 class="heading">Task to do</h1>
+    <form class="action">
+      <input class="input" type="text" id="new-task" placeholder="Click Here to Add">
+      <button type="submit">Enter</button>
+    </form>
+    <ul class="task-content content" id="items">
+      <span class="not-found">No task found!</span>
+    </ul>
+  </div>
+  <div class="completed-task task">
+    <h1 class="heading">Completed Task</h1>
+    <ul class="task-content-completed content">
+      <span class="not-found">No task found!</span>
+    </ul>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
