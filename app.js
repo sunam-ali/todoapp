@@ -1,20 +1,55 @@
-// selected elments
-
+// selected elements
 let newTask = document.querySelector('#new-task');
 let form = document.querySelector('form');
 let todoUl = document.querySelector('#items');
 let completedUl = document.querySelector('.task-content-completed');
 
-// Functions
-
 let todoEmptyMessage = todoUl.querySelector('.not-found');
 let completedEmptyMessage = completedUl.querySelector('.not-found');
+
+// 🔸 LocalStorage Keys
+const TODO_KEY = "todoTasks";
+const COMPLETED_KEY = "completedTasks";
+
+// 🔹 Load tasks from localStorage
+function loadTasksFromStorage() {
+  const todos = JSON.parse(localStorage.getItem(TODO_KEY)) || [];
+  const completed = JSON.parse(localStorage.getItem(COMPLETED_KEY)) || [];
+
+  todos.forEach(task => {
+    let listItem = createTask(task);
+    todoUl.appendChild(listItem);
+    setTimeout(() => listItem.classList.add('show'), 10);
+    bindInCompleteItems(listItem, completeTask);
+  });
+
+  completed.forEach(task => {
+    let listItem = createTask(task);
+    let deleteBtn = document.createElement('button');
+    deleteBtn.innerText = "Delete";
+    deleteBtn.className = "delete";
+    listItem.appendChild(deleteBtn);
+    listItem.querySelector('input').remove();
+    completedUl.appendChild(listItem);
+    setTimeout(() => listItem.classList.add('show'), 10);
+    bindCompleteItems(listItem, deleteTask);
+  });
+
+  updateEmptyMessage();
+}
+
+// 🔹 Save tasks to localStorage
+function saveTasksToStorage() {
+  const todos = Array.from(todoUl.querySelectorAll('li label')).map(label => label.innerText);
+  const completed = Array.from(completedUl.querySelectorAll('li label')).map(label => label.innerText);
+  localStorage.setItem(TODO_KEY, JSON.stringify(todos));
+  localStorage.setItem(COMPLETED_KEY, JSON.stringify(completed));
+}
 
 function updateEmptyMessage() {
   todoEmptyMessage.style.display = todoUl.querySelector('li') ? 'none' : 'block';
   completedEmptyMessage.style.display = completedUl.querySelector('li') ? 'none' : 'block';
 }
-
 
 let createTask = function (task) {
   let listItem = document.createElement('li');
@@ -25,7 +60,6 @@ let createTask = function (task) {
 
   listItem.appendChild(checkbox);
   listItem.appendChild(label);
-
   return listItem;
 }
 
@@ -37,17 +71,16 @@ let addTask = function (e) {
   newTask.value = "";
   setTimeout(() => listItem.classList.add('show'), 10);
   bindInCompleteItems(listItem, completeTask);
-  updateEmptyMessage()
+  updateEmptyMessage();
+  saveTasksToStorage(); // ✅ Save
 }
 
 let completeTask = function () {
   let listItem = this.parentNode;
 
-  // Fade out from To-Do
   listItem.classList.remove('show');
   listItem.classList.add('hide');
 
-  // After the fade-out completes (300ms), move to Completed and fade in
   setTimeout(() => {
     let deleteBtn = document.createElement('button');
     deleteBtn.innerText = "Delete";
@@ -59,16 +92,15 @@ let completeTask = function () {
 
     completedUl.appendChild(listItem);
 
-    // Reset animation classes
     listItem.classList.remove('hide');
-    void listItem.offsetWidth; // Force reflow to restart transition
+    void listItem.offsetWidth;
     listItem.classList.add('show');
 
     bindCompleteItems(listItem, deleteTask);
     updateEmptyMessage();
-  }, 300); // Match your CSS transition time
+    saveTasksToStorage(); // ✅ Save
+  }, 300);
 };
-
 
 let deleteTask = function () {
   let listItem = this.parentNode;
@@ -77,6 +109,7 @@ let deleteTask = function () {
     let ul = listItem.parentNode;
     ul.removeChild(listItem);
     updateEmptyMessage();
+    saveTasksToStorage(); // ✅ Save
   }, 10);
 }
 
@@ -89,19 +122,9 @@ let bindCompleteItems = function (taskItem, deleteBtnClick) {
   let deleteButton = taskItem.querySelector('.delete');
   deleteButton.onclick = deleteBtnClick;
 }
-for (let i = 0; i < todoUl.children.length; i++) {
-  const item = todoUl.children[i];
-  if (item.className === 'show') {
-    bindInCompleteItems(item, completeTask);
-  }
-}
 
-for (let i = 0; i < completedUl.children.length; i++) {
-  const item = completedUl.children[i];
-  if (item.className === 'show') {
-    bindCompleteItems(item, deleteTask);
-  }
-}
+// 🔹 Load existing tasks on page load
+loadTasksFromStorage();
 
 form.addEventListener('submit', addTask);
-updateEmptyMessage() 
+
